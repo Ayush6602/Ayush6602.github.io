@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="./css/index.css">
+		<title>Ayush Das</title>
+	</head>
+
+	<body>
+		<header class="flex flex-col">
+			<h1 class="title">Ayush Das</h1>
+			<p>I love doing web applications backend <span>& ANIME!!!</span></p>
+		</header>
+		<section class="flex flex-col">
+			<h2>Projects</h2>
+			<div class="flex flex-col">
+				<div class="project flex flex-col">
+					<img class="project-image" src="./imgs/slg.png" alt="smart local guide">
+					<a target="_blank" href="https://github.com/Smart-Local-Guide-Devs/webapp" class="project-name">
+						<h3>Smart Local Guide</h3>
+					</a>
+					<div class="flex flex-col project-details">
+						<p>Location and review based app recommendation system. (similar to playstore)</p>
+						<ul>
+							<li><span>Backend: </span><span>Django WSGI</span></li>
+							<li><span>API: </span><span>Django Rest Framework</span></li>
+							<li><span>Database: </span><span>Postgres</span></li>
+							<li><span>Hosted On: </span><span>Heroku</span></li>
+							<li><span>Hosted Link: </span><span><a target="_blank"
+										href="http://smart-local-guide.herokuapp.com/">Link</a></span></li>
+							<li><span>Notification: </span><span>Slack</span></li>
+						</ul>
+					</div>
+				</div>
+				<div class="project flex flex-col">
+					<img class="project-image" src="./imgs/medikit.jpeg" alt="medikit">
+					<a target="_blank" href="https://github.com/Priyanka7011/medHacks-medikit" class="project-name">
+						<h3>Medikit</h3>
+					</a>
+					<div class="flex flex-col project-details">
+						<p>Shows you nearby pharmacies(true location based) and their items available(dummy). (similar
+							to
+							zomato)</p>
+						<ul>
+							<li><span>Backend: </span><span>Django ASGI</span></li>
+							<li><span>Database: </span><span>CockroachDB</span></li>
+							<li><span>Authentication: </span><span>SawoAuth</span></li>
+							<li><span>Frontend: </span><span>React</span></li>
+							<li><span>Notification: </span><span>Twilio</span></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="flex flex-col">
+			<h2>Profiles</h2>
+			<div class="flex flex-row profile-btns">
+				<a target="_blank" href="mailto:ayushdas6602@gmail.com"><button><img class="icon" src="./imgs/gmail.svg"
+							alt="gmail">ayushdas6602</button></a>
+				<a target="_blank" href="https://www.linkedin.com/in/ayush-das/"><button><img class="icon"
+							src="./imgs/linkedin.png" alt="linkedin">ayush-das</button></a>
+				<a target="_blank" href="https://codeforces.com/profile/Xero."><button><img class="icon"
+							src="./imgs/cf.png" alt="codeforces">Xero.</button></a>
+				<a target="_blank" href="https://www.hackerrank.com/__XERO__"><button><img class="icon"
+							src="./imgs/hackerrank.png" alt="hackerrank">__XERO__</button></a>
+				<a target="_blank" href="https://www.hackerearth.com/@ayushdas6602"><button><img class="icon"
+							src="./imgs/hackerearth.png" alt="hackerearth">ayush6602</button></a>
+				<a target="_blank" href="https://www.codechef.com/users/xero_"><button><img class="icon"
+							src="./imgs/cc.png" alt="codechef">xero_</button></a>
+			</div>
+		</section>
+		<section class="flex flex-col">
+			<h2>Look at some great images</h2>
+			<div class="flex flex-row">
+				<input type="text" name="image_query" id="queryInput" placeholder="Type any keyword">
+				<button id="addBtn">Add Image</button>
+				<button id="rmvBtn">Remove Image</button>
+			</div>
+			<div class="flex flex-row" id="imageHolder">
+				<img class="random-image" alt="random image" src="https://source.unsplash.com/500x500/?nature">
+			</div>
+		</section>
+		<script src="./js/index.js"></script>
+	</body>
+
+</html>
