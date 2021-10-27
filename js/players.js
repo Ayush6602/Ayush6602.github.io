@@ -1,42 +1,27 @@
 import { Box } from "./boxs.js";
+import { Bullet } from "./guns.js";
 export class Player extends Box {
-    constructor(canvas, context, level, x, y, color) {
-        super(canvas, context, x, y, level.tileSize, level.tileSize, color);
+    speed;
+    inAir;
+    guns;
+    gunIdx;
+    constructor(level, x, y, color) {
+        super(level, x, y, level.tileSize, level.tileSize, color);
         this.speed = level.tileSize / 4;
         this.inAir = false;
-        this.level = level;
-        this.dx = 0;
-        this.dy = 0;
-    }
-    inRange(start1, len1, start2, len2) {
-        return ((start2 <= start1 && start1 < start2 + len2) ||
-            (start2 < start1 + len1 && start1 + len1 <= start2 + len2));
-    }
-    checkCollision(box) {
-        if (this.inRange(this.x + this.dx, this.width, box.x, box.width)) {
-            if (this.inRange(this.y, this.height, box.y, box.height)) {
-                this.dx = 0;
-            }
-        }
-        if (this.inRange(this.y + this.dy, this.height, box.y, box.height)) {
-            if (this.inRange(this.x, this.width, box.x, box.width)) {
-                this.dy = 0;
-            }
-        }
+        this.level.canvas.parentElement?.addEventListener("keydown", (e) => this.keyDownListner(e));
+        this.level.canvas.addEventListener("click", (e) => this.clickListner(e));
+        this.guns = [];
+        this.gunIdx = 0;
     }
     update() {
         if (this.inAir)
             this.dy += 0.5;
         const row = Math.floor(this.y / this.level.tileSize);
         const col = Math.floor(this.x / this.level.tileSize);
-        if (this.dy >= 0) {
-            if (this.level.layout[row + 1][col].color != "black") {
-                this.inAir = false;
-                this.dy = 0;
-            }
-            else {
-                this.inAir = true;
-            }
+        if (this.dy >= 0 && this.level.layout[row + 1][col]?.color == "brown") {
+            this.inAir = false;
+            this.dy = 0;
         }
         else {
             this.inAir = true;
@@ -47,16 +32,25 @@ export class Player extends Box {
         this.dy = Math.max(this.dy, -this.speed);
         for (let i = 0; i < this.level.layout.length; i++) {
             for (let j = 0; j < this.level.layout[i].length; j++) {
-                if (this.level.layout[i][j].color == "black")
+                if (!this.level.layout[i][j])
                     continue;
-                this.checkCollision(this.level.layout[i][j]);
+                if (this.checkCollision(this.level.layout[i][j])) {
+                    if (this.level.layout[i][j].color == "yellow") {
+                        this.guns.push(this.level.layout[i][j]);
+                        delete this.level.layout[i][j];
+                    }
+                }
             }
         }
         this.x += this.dx;
         this.y += this.dy;
     }
-    keyDownListner(key) {
-        switch (key) {
+    draw() {
+        this.update();
+        super.draw();
+    }
+    keyDownListner(keyboardEvent) {
+        switch (keyboardEvent.key) {
             case "w":
                 if (!this.inAir) {
                     this.dy = -this.speed;
@@ -74,5 +68,10 @@ export class Player extends Box {
             default:
                 break;
         }
+    }
+    clickListner(clickEvent) {
+        if (this.guns.length == 0)
+            return;
+        this.level.boxs.push(new Bullet(this.level, this, clickEvent.x, clickEvent.y));
     }
 }
