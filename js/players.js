@@ -44,6 +44,11 @@ export class Player extends Box {
         }
         this.x += this.dx;
         this.y += this.dy;
+        if ((this.x > window.scrollX + 0.75 * window.innerWidth &&
+            this.dx > 0) ||
+            (this.x < window.scrollX + 0.25 * window.innerWidth && this.dx < 0)) {
+            window.scrollBy(this.dx, 0);
+        }
     }
     draw() {
         this.update();
@@ -72,6 +77,6 @@ export class Player extends Box {
     clickListner(clickEvent) {
         if (this.guns.length == 0)
             return;
-        this.level.boxs.push(new Bullet(this.level, this, clickEvent.x, clickEvent.y));
+        this.level.boxs.push(new Bullet(this.level, this, clickEvent.x + window.scrollX, clickEvent.y));
     }
 }
