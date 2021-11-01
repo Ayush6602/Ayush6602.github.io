@@ -4,7 +4,7 @@ import { Player } from "./players.js";
 export class Level {
     canvas;
     context;
-    tileSize = 40;
+    tileSize;
     layout;
     boxs;
     constructor(canvas, context) {
@@ -12,6 +12,7 @@ export class Level {
         this.context = context;
         this.layout = [];
         this.boxs = [];
+        this.tileSize = 40;
     }
     async loadLevel(levelNo) {
         let res = await fetch("/levels/level" + levelNo + ".txt");
@@ -26,7 +27,8 @@ export class Level {
                     this.boxs.push(new Player(this, j * this.tileSize, i * this.tileSize, "green"));
                 }
                 else if (rows[i][j] == "G") {
-                    this.layout[i][j] = new Gun(this, j * this.tileSize, i * this.tileSize, "yellow", 1, 30, 10);
+                    const weight = Math.round(20 + Math.random() * 80);
+                    this.layout[i][j] = new Gun(this, j * this.tileSize, i * this.tileSize, weight);
                 }
                 else if (rows[i][j] == "1") {
                     this.layout[i][j] = new Box(this, j * this.tileSize, i * this.tileSize, this.tileSize, this.tileSize, "brown");

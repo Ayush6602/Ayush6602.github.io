@@ -6,39 +6,56 @@ export class Gun extends Box {
 	recoil: number;
 	spread: number;
 	ammo: number;
+	speed: number;
+	reloadTime: number;
+	coolDown: number;
 
-	constructor(
-		level: Level,
-		x: number,
-		y: number,
-		color: string,
-		recoil: number,
-		spread: number,
-		ammo: number
-	) {
-		super(level, x, y, level.tileSize, level.tileSize, color);
-		this.recoil = recoil;
-		this.spread = spread;
-		this.ammo = ammo;
+	constructor(level: Level, x: number, y: number, weight: number) {
+		super(
+			level,
+			x,
+			y,
+			level.tileSize,
+			level.tileSize,
+			`rgb(255, ${Math.round(255 - (weight * 255) / 100)}, 0)`
+		);
+		this.recoil = weight / 3;
+		this.spread = 5 - Math.round(weight / 20);
+		this.ammo = 25 - Math.round(weight / 5);
+		this.reloadTime = weight * 2;
+		this.coolDown = 0;
+		this.speed = 10 + Math.round(weight / 4);
+	}
+
+	draw() {
+		if (this.coolDown >= this.reloadTime) this.coolDown = 0;
+		else if (this.coolDown > 0) this.coolDown++;
+		super.draw(this.ammo.toString());
 	}
 }
 
 export class Bullet extends Box {
-	constructor(level: Level, player: Player, x: number, y: number) {
+	constructor(gun: Gun, player: Player, x: number, y: number) {
 		super(
-			level,
+			gun.level,
 			player.x + player.width / 2,
 			player.y + player.height / 2,
-			level.tileSize / 5,
-			level.tileSize / 10,
-			"yellow"
+			gun.level.tileSize / 10,
+			gun.level.tileSize / 10,
+			gun.color
 		);
-		this.dx =
-			(player.speed * (x - this.x)) /
+		let cos =
+			(x - this.x) /
 			Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2));
-		this.dy =
-			(player.speed * (y - this.y)) /
+		let sin =
+			(y - this.y) /
 			Math.sqrt(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2));
+		this.dx = gun.speed * cos + (Math.random() - 0.5) * gun.spread;
+		this.dy = gun.speed * sin + (Math.random() - 0.5) * gun.spread;
+		player.dx += -gun.recoil * cos;
+		player.dy += -gun.recoil * sin;
+		if (gun.ammo > 0) gun.ammo--;
+		gun.coolDown += 1;
 	}
 	update(): void {
 		for (let i = 0; i < this.level.layout.length; i++) {

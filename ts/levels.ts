@@ -5,7 +5,7 @@ import { Player } from "./players.js";
 export class Level {
 	canvas: HTMLCanvasElement;
 	context: CanvasRenderingContext2D;
-	tileSize: number = 40;
+	tileSize: number;
 	layout: Array<Array<Box>>;
 	boxs: Array<Box>;
 
@@ -14,6 +14,7 @@ export class Level {
 		this.context = context;
 		this.layout = [];
 		this.boxs = [];
+		this.tileSize = 40;
 	}
 
 	async loadLevel(levelNo: number): Promise<void> {
@@ -35,14 +36,12 @@ export class Level {
 						)
 					);
 				} else if (rows[i][j] == "G") {
+					const weight = Math.round(20 + Math.random() * 80);
 					this.layout[i][j] = new Gun(
 						this,
 						j * this.tileSize,
 						i * this.tileSize,
-						"yellow",
-						1,
-						30,
-						10
+						weight
 					);
 				} else if (rows[i][j] == "1") {
 					this.layout[i][j] = new Box(

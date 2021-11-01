@@ -9,6 +9,8 @@ export class Box {
 	color: string;
 	dx: number;
 	dy: number;
+	textSize: number;
+	textColor: string;
 
 	constructor(
 		level: Level,
@@ -26,6 +28,8 @@ export class Box {
 		this.level = level;
 		this.dx = 0;
 		this.dy = 0;
+		this.textSize = level.tileSize / 2;
+		this.textColor = this.color;
 	}
 
 	inRange(
@@ -57,8 +61,18 @@ export class Box {
 		return collided;
 	}
 
-	draw(): void {
+	draw(text: string | null = null): void {
 		this.level.context.fillStyle = this.color;
 		this.level.context.fillRect(this.x, this.y, this.width, this.height);
+		if (text) {
+			this.level.context.fillStyle = this.textColor;
+			this.level.context.font = this.textSize + "px Ariel";
+			this.level.context.textAlign = "center";
+			this.level.context.fillText(
+				text,
+				this.x + this.width / 2,
+				this.y + this.height / 2
+			);
+		}
 	}
 }

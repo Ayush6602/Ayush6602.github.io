@@ -1,47 +1,41 @@
 import { Box } from "./boxs.js";
-import { Bullet } from "./guns.js";
+import { Bullet, Gun } from "./guns.js";
 export class Player extends Box {
     speed;
-    inAir;
     guns;
     gunIdx;
     constructor(level, x, y, color) {
         super(level, x, y, level.tileSize, level.tileSize, color);
         this.speed = level.tileSize / 4;
-        this.inAir = false;
         this.level.canvas.parentElement?.addEventListener("keydown", (e) => this.keyDownListner(e));
         this.level.canvas.addEventListener("click", (e) => this.clickListner(e));
-        this.guns = [];
+        this.guns = [
+            new Gun(level, this.level.tileSize, this.level.tileSize, 10),
+        ];
         this.gunIdx = 0;
+        this.guns[0].textColor = "black";
     }
-    update() {
-        if (this.inAir)
-            this.dy += 0.5;
-        const row = Math.floor(this.y / this.level.tileSize);
-        const col = Math.floor(this.x / this.level.tileSize);
-        if (this.dy >= 0 && this.level.layout[row + 1][col]?.color == "brown") {
-            this.inAir = false;
-            this.dy = 0;
-        }
-        else {
-            this.inAir = true;
-        }
-        this.dx = Math.min(this.dx, this.speed);
-        this.dx = Math.max(this.dx, -this.speed);
-        this.dy = Math.min(this.dy, this.speed);
-        this.dy = Math.max(this.dy, -this.speed);
+    checkCollisions() {
         for (let i = 0; i < this.level.layout.length; i++) {
             for (let j = 0; j < this.level.layout[i].length; j++) {
-                if (!this.level.layout[i][j])
-                    continue;
-                if (this.checkCollision(this.level.layout[i][j])) {
-                    if (this.level.layout[i][j].color == "yellow") {
+                if (this.level.layout[i][j] &&
+                    this.checkCollision(this.level.layout[i][j])) {
+                    if (this.level.layout[i][j] instanceof Gun) {
+                        this.level.layout[i][j].x =
+                            this.guns[this.guns.length - 1].x +
+                                this.level.tileSize;
+                        this.level.layout[i][j].y = this.guns[0].y;
                         this.guns.push(this.level.layout[i][j]);
-                        delete this.level.layout[i][j];
                     }
                 }
             }
         }
+    }
+    update() {
+        if (this.dy == 0)
+            this.dx -= Math.sign(this.dx) * 0.5;
+        this.dy += 0.5;
+        this.checkCollisions();
         this.x += this.dx;
         this.y += this.dy;
         if ((this.x > window.scrollX + 0.75 * window.innerWidth &&
@@ -52,31 +46,47 @@ export class Player extends Box {
     }
     draw() {
         this.update();
+        for (let idx = 0; idx < this.guns.length; idx++) {
+            this.guns[idx].draw();
+        }
         super.draw();
     }
     keyDownListner(keyboardEvent) {
         switch (keyboardEvent.key) {
             case "w":
-                if (!this.inAir) {
+                if (this.dy == 0)
                     this.dy = -this.speed;
-                }
                 break;
             case "a":
-                this.dx -= 3;
+                this.dx = -this.speed;
                 break;
             case "d":
-                this.dx += 3;
+                this.dx = this.speed;
                 break;
             case "s":
                 this.dx = 0;
+                this.guns[this.gunIdx].textColor = this.guns[this.gunIdx].color;
+                this.gunIdx = (this.gunIdx + 1) % this.guns.length;
+                this.guns[this.gunIdx].textColor = "black";
                 break;
             default:
                 break;
         }
     }
     clickListner(clickEvent) {
-        if (this.guns.length == 0)
+        if (this.guns[this.gunIdx].coolDown > 0)
             return;
-        this.level.boxs.push(new Bullet(this.level, this, clickEvent.x + window.scrollX, clickEvent.y));
+        this.level.boxs.push(new Bullet(this.guns[this.gunIdx], this, clickEvent.x + window.scrollX, clickEvent.y));
+        if (this.guns[this.gunIdx].ammo == 0) {
+            this.guns[this.gunIdx].color = "black";
+            this.guns[this.gunIdx].textColor = "black";
+            this.guns[this.gunIdx].draw();
+            this.guns.splice(this.gunIdx, 1);
+            for (let idx = this.gunIdx; idx < this.guns.length; idx++) {
+                this.guns[idx].x = this.guns[idx - 1].x + this.level.tileSize;
+            }
+            this.gunIdx--;
+            this.guns[this.gunIdx].textColor = "black";
+        }
     }
 }

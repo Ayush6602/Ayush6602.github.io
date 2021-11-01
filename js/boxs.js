@@ -7,6 +7,8 @@ export class Box {
     color;
     dx;
     dy;
+    textSize;
+    textColor;
     constructor(level, x, y, width, height, color) {
         this.x = x;
         this.y = y;
@@ -16,6 +18,8 @@ export class Box {
         this.level = level;
         this.dx = 0;
         this.dy = 0;
+        this.textSize = level.tileSize / 2;
+        this.textColor = this.color;
     }
     inRange(start1, len1, start2, len2) {
         return ((start2 <= start1 && start1 < start2 + len2) ||
@@ -39,8 +43,14 @@ export class Box {
         }
         return collided;
     }
-    draw() {
+    draw(text = null) {
         this.level.context.fillStyle = this.color;
         this.level.context.fillRect(this.x, this.y, this.width, this.height);
+        if (text) {
+            this.level.context.fillStyle = this.textColor;
+            this.level.context.font = this.textSize + "px Ariel";
+            this.level.context.textAlign = "center";
+            this.level.context.fillText(text, this.x + this.width / 2, this.y + this.height / 2);
+        }
     }
 }
