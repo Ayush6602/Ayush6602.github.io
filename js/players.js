@@ -9,9 +9,7 @@ export class Player extends Box {
         this.speed = level.tileSize / 4;
         this.level.canvas.parentElement?.addEventListener("keydown", (e) => this.keyDownListner(e));
         this.level.canvas.addEventListener("click", (e) => this.clickListner(e));
-        this.guns = [
-            new Gun(level, this.level.tileSize, this.level.tileSize, 10),
-        ];
+        this.guns = [new Gun(level, this.level.tileSize, this.level.tileSize, 10)];
         this.gunIdx = 0;
         this.guns[0].textColor = "black";
     }
@@ -20,12 +18,13 @@ export class Player extends Box {
             for (let j = 0; j < this.level.layout[i].length; j++) {
                 if (this.level.layout[i][j] &&
                     this.checkCollision(this.level.layout[i][j])) {
-                    if (this.level.layout[i][j] instanceof Gun) {
-                        this.level.layout[i][j].x =
-                            this.guns[this.guns.length - 1].x +
-                                this.level.tileSize;
-                        this.level.layout[i][j].y = this.guns[0].y;
+                    if (this.level.layout[i][j] instanceof Gun &&
+                        !this.guns.includes(this.level.layout[i][j])) {
                         this.guns.push(this.level.layout[i][j]);
+                        if (this.gunIdx < 0) {
+                            this.gunIdx = 0;
+                            this.guns[this.gunIdx].textColor = "black";
+                        }
                     }
                 }
             }
@@ -38,8 +37,7 @@ export class Player extends Box {
         this.checkCollisions();
         this.x += this.dx;
         this.y += this.dy;
-        if ((this.x > window.scrollX + 0.75 * window.innerWidth &&
-            this.dx > 0) ||
+        if ((this.x > window.scrollX + 0.75 * window.innerWidth && this.dx > 0) ||
             (this.x < window.scrollX + 0.25 * window.innerWidth && this.dx < 0)) {
             window.scrollBy(this.dx, 0);
         }
@@ -47,9 +45,9 @@ export class Player extends Box {
     draw() {
         this.update();
         for (let idx = 0; idx < this.guns.length; idx++) {
-            this.guns[idx].x += window.scrollX;
+            this.guns[idx].x = (idx + 1) * this.level.tileSize + window.scrollX;
+            this.guns[idx].y = this.level.tileSize;
             this.guns[idx].draw();
-            this.guns[idx].x -= window.scrollX;
         }
         super.draw();
     }
@@ -77,6 +75,7 @@ export class Player extends Box {
     clickListner(clickEvent) {
         if (this.gunIdx < 0 || this.guns[this.gunIdx].coolDown > 0)
             return;
+        this.guns[this.gunIdx].audio.play();
         this.level.boxs.push(new Bullet(this.guns[this.gunIdx], this, clickEvent.x + window.scrollX, clickEvent.y));
         if (this.guns[this.gunIdx].ammo == 0) {
             this.guns[this.gunIdx].color = "black";

@@ -29,15 +29,19 @@ export class Box {
         let collided = false;
         if (this.inRange(this.x + this.dx, this.width, box.x, box.width)) {
             if (this.inRange(this.y, this.height, box.y, box.height)) {
-                if (box.color == "brown")
+                if (box.color == "brown") {
+                    this.x = this.dx > 0 ? box.x - this.width : box.x + box.width;
                     this.dx = 0;
+                }
                 collided = true;
             }
         }
         if (this.inRange(this.y + this.dy, this.height, box.y, box.height)) {
             if (this.inRange(this.x, this.width, box.x, box.width)) {
-                if (box.color == "brown")
+                if (box.color == "brown") {
+                    this.y = this.dy > 0 ? box.y - this.height : box.y + box.height;
                     this.dy = 0;
+                }
                 collided = true;
             }
         }

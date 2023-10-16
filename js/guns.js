@@ -6,14 +6,21 @@ export class Gun extends Box {
     speed;
     reloadTime;
     coolDown;
+    audio;
     constructor(level, x, y, weight) {
-        super(level, x, y, level.tileSize, level.tileSize, `rgb(255, ${Math.round(255 - (weight * 255) / 100)}, 0)`);
-        this.recoil = weight / 3;
+        super(level, x, y, level.tileSize, level.tileSize, `rgb(0, ${Math.round(255 - (weight * 255) / 100)}, 255)`);
+        this.recoil = weight / 4;
         this.spread = 5 - Math.round(weight / 20);
         this.ammo = 25 - Math.round(weight / 5);
         this.reloadTime = weight * 2;
         this.coolDown = 0;
         this.speed = 10 + Math.round(weight / 4);
+        if (weight > 70)
+            this.audio = new Audio("./sounds/heavy-shot.mp3");
+        else if (weight > 30)
+            this.audio = new Audio("./sounds/medium-shot.mp3");
+        else
+            this.audio = new Audio("./sounds/light-shot.mp3");
     }
     draw() {
         if (this.coolDown >= this.reloadTime)
